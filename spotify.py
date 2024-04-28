@@ -16,7 +16,7 @@ def create_dataset(user_data, output):
     Returns:
         Nothing.
     """
-    header = ["track_id", "track_name", "artist_names", "album_name", "duration_ms", "popularity", "genres"] # headers for the dataset
+    header = ["track_id", "track_name", "artist_names", "album_name", "duration_ms", "popularity", "explicit"] #, "genres"] # headers for the dataset
 
     with open(output, "w", newline="", encoding="utf-8") as file: # opening a new file with the purpose to write (creating dataset)
         writer = csv.writer(file) # initializing csv writer object
@@ -30,9 +30,9 @@ def create_dataset(user_data, output):
             duration_ms = track["duration_ms"] # length of track (in milliseconds)
             popularity = track["popularity"] # Spotify's popularity metric for the track
             explicit = track["explicit"] # binary classification detailing if the song is explicit
-            genres = ", ".join(track["genres"]) # the genres need to be joined because they are currently unique elements in a list
+            #genres = ", ".join(track["genres"]) # the genres need to be joined because they are currently unique elements in a list
 
-            row = [track_id, track_name, artist_names, album_name, duration_ms, popularity, explicit, genres] # initializing the current row parameter
+            row = [track_id, track_name, artist_names, album_name, duration_ms, popularity, explicit] #, genres] # initializing the current row parameter
             writer.writerow(row) # writing the current row
 
     print(f'Dataset saved as {output}') # if we were successful, print message notifying where the dataset was saved (filename)
@@ -49,6 +49,7 @@ def get_genres(spotify, artist_id):
         List containing the genres associated with the specified artist
     """
     artist_info = spotify.artist(artist_id)
+    print(artist_info)
     return artist_info["genres"] # we only want the artist's associated genres (not all other information pertaining to artist)
 
 def get_user_data(user, song_limit):
@@ -79,6 +80,8 @@ def get_user_data(user, song_limit):
         if not top_tracks["items"]: return user_data # if the user does not have enough songs in their top tracks collection, then return the songs already obtained (if any)
 
         for track in top_tracks["items"]: # for each track, the information of the track need to be stored
+            print(track["name"]) # debugging
+            print("here")
             song_data = { # represents a song
                 "id": track["id"], # unique track id
                 "name": track["name"], # track name
@@ -87,14 +90,18 @@ def get_user_data(user, song_limit):
                 "duration_ms": track["duration_ms"], # duration of the track (in milliseconds) 
                 "popularity": track["popularity"], # Spotify's popularity metric for the specific track
                 "explicit": track["explicit"], # binary classification detailing if the song is explicit
-                "genres": [] # list containing the track's associated genres
+                #"genres": [] # list containing the track's associated genres
             }
-
+            '''
             for artist in track["artists"]: # each artist has associated genres, which need to be obtained since tracks do not have that information inherently stored in the object
+                print(artist)
                 artist_id = artist["id"] # using artist id to get the genres
-                genres = get_genres(spotify, artist_id) # using helper function to get genres
+                genres = spotify.artist(artist_id)
+                #genres = get_genres(spotify, artist_id) # using helper function to get genres
+                print(genres)
                 song_data["genres"].extend(genres) # adding genres to existing genres (since we do not want to overwrite existing genres in the case of multiple artists)
-            
+            print("past genres")
+            '''
             user_data.append(song_data) # add the current track dictionary to user data list
 
         offset += LIMIT # increase the offset so that we can process the next 50 songs (avoiding the spotify hard limit of 50 songs per API call)
@@ -103,4 +110,4 @@ def get_user_data(user, song_limit):
 
 ### USED TO CREATE INITIAL DATASET ###
 user_data = get_user_data(USER, 1500)
-create_dataset(user_data, f'datasets/{USER}_top_1500_spotify_songs.csv')
+create_dataset(user_data, f'data/spotify-data/{USER}_top_1500_spotify_songs.csv')
