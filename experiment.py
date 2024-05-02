@@ -5,7 +5,7 @@ from PopularRecSys import PopularRec
 from CollaborativeFilteringRecSys import CollaborativeFilteringRecSys
 
 track_ids = ['6EtAJUmBqj57hkiBxDy27I', '3yZdQkCzLVKXDEsr9672Db', '0zmitk2ty065TMAvEtGWQ6', '4NOdVqCo6n2Bzsyhl00oB5', '6XdMns9ysH61ngwt7wMh0u']
-playlist_ds = ['200_songs.csv', 'Digital Desert_songs.csv', 'Pico_songs.csv','Resolve._songs.csv', 'Tizón_songs.csv']
+playlist_ds = ['Playlists/200_songs.csv', 'Playlists/Digital Desert_songs.csv', 'Playlists/Pico_songs.csv','Playlists/Resolve._songs.csv', 'Playlists/Tizón_songs.csv']
 
 num_recs = 10
 num_training_songs = 25
